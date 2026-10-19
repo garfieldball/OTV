@@ -1,5 +1,7 @@
+//setup
 #include <string>
 
+//main stuff
 void setup() {
   std::string orientation = detectLocation();
 
@@ -15,29 +17,37 @@ void setup() {
 
 }
 
+//runs all the time
 void loop() {
 
 
 }
+//Custom functions start here!!!!!!!!!!!!!!!!!!!
 
 //1 is the site closest to the bottom, 2 is the other one (north)
+//orients the OTV towards the mission site and detects which starting point it's in
 int detectLocation(){
-  //go to office hours and talk about how the hell it gets info from the thing
+  //figure out how to get aruco info
   if (){
     location = 1;
   } else {
     location = 2;
   }
-  
+
   return location;
 }
 
-//Custom functions start here!!!!!!!!!!!!!!!!!!!
+//docks with the mission site
 void navToMission(){
   
 }
 
+//completes mission tasks
 void completeMission(){
 
 }
-//hi
+
+//procedural navigation to get to the goal!
+void navToGoal(){
+
+}
