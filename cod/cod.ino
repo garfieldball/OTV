@@ -8,6 +8,7 @@ bool obstacleDetected = false
 
 //main stuff
 void setup() {
+  ENES100.begin("Green Machine", HYDROGEN, 41, 1116, )
   std::string orientation = detectLocation();
 
   navToMission();
@@ -47,12 +48,29 @@ int detectLocation(){
 
 //docks with the mission site
 void navToMission(){
-  
+  if (location = 1) {
+    //rotate heading to -pi/2
+  if (location = 2){
+    //rotate heading to pi/2
+  } 
+  //move forward
+  if (distance <= arrival_threshold){
+    //stop motors
+    while (true)
+    //stop motors
+  }
 }
 
 //completes mission tasks
 void completeMission(){
-
+  //transmit LED color
+  int LEDcolor = digitalRead(colorpin);
+  Serial.print("LEDcolor:");
+  Serial.print(LEDcolor);
+  int Voltage = analogRead(voltmeter);
+   Serial.print("Voltage:");
+  Serial.print(Voltage);
+  //rotate one servo CW and one CCW to drop marbles
 }
 
 //procedural navigation to get to the goal!
