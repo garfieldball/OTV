@@ -1,103 +1,178 @@
-//setup
-#include <string>
+#include "Enes100.h"
+#include "Tank.h"
 
-//variables
-int collision_tolerance = 15
-bool obstacleDetected = false
+#define PIN_MOTOR_1_FORWARD 11
+#define PIN_MOTOR_1_REVERSE 10
+#define PIN_MOTOR_2_FORWARD 9
+#define PIN_MOTOR_2_REVERSE 8
+#define PIN_MOTOR_3_FORWARD 4
+#define PIN_MOTOR_3_REVERSE 5
+#define PIN_MOTOR_4_FORWARD 2
+#define PIN_MOTOR_4_REVERSE 3
+// Bump Sensors
+#define PIN_BUMP_FRONT 32
+#define PIN_BUMP_REAR 33
+// Ultrasonic Sensors
+#define PIN_US_FRONT_TRIG 18
+#define PIN_US_FRONT_ECHO 19
+#define PIN_US_REAR_TRIG 27
+#define PIN_US_REAR_ECHO 26
+// Infrared Sensors
+#define PIN_IR_1 15
+#define PIN_IR_2 17
+#define PIN_IR_3 14
+#define PIN_IR_4 16
+// WiFi Modules
+#define PIN_WIFI_TX 52
+#define PIN_WIFI_RX 50
 
+int collision_tolerance = 15;
+bool obstacleDetected = false;
 
-//main stuff
+float theta;
+float y;
+
 void setup() {
-  ENES100.begin("Green Machine", HYDROGEN, 41, 1116, )
-  std::string orientation = detectLocation();
+  Enes100.begin("Green Machine", HYDROGEN, 10, 1116, 52, 50);
+  Tank.begin();
 
-  navToMission();
-  completeMission();
-  if (orientation = 1){
-    //turn right
-  } else {
-    //turn left
-  }
+  pinMode(PIN_US_FRONT_TRIG, OUTPUT);
+  pinMode(PIN_US_FRONT_ECHO, INPUT);
+  updateSensors();
 
-  navToGoal();
-
+  //testing
+  go(1000);
+  stop();
+  delay(500);
+  goBack(1000);
+  stop();
+  delay(500);
+  turnLeft();
+  delay(500);
+  turnLeft();
+  turnRight();
+  delay(500);
+  turnRight();
+  stop();
 }
 
-//runs all the time
 void loop() {
-  //distance = get distance from the sensor (convert to mm)
-  x = Enes100.getX()
-  y = Enes100.getY()
-
+  //loop more like poop
 }
 
-//Custom functions start here!!!!!!!!!!!!!!!!!!!
-
-//1 is the site closest to the bottom, 2 is the other one (north)
-//orients the OTV towards the mission site and detects which starting point it's in
-int detectLocation(){
-  //figure out how to get aruco info
-  if (){
-    location = 1;
-  } else {
-    location = 2;
-  }
-
-  return location;
-}
-
-//docks with the mission site
-void navToMission(){
-  if (location = 1) {
-    //rotate heading to -pi/2
-  if (location = 2){
-    //rotate heading to pi/2
-  } 
-  //move forward
-  if (distance <= arrival_threshold){
-    //stop motors
-    while (true)
-    //stop motors
-  }
-}
-
-//completes mission tasks
-void completeMission(){
-  //transmit LED color
-  int LEDcolor = digitalRead(colorpin);
-  Serial.print("LEDcolor:");
-  Serial.print(LEDcolor);
-  int Voltage = analogRead(voltmeter);
-   Serial.print("Voltage:");
-  Serial.print(Voltage);
-  //rotate one servo CW and one CCW to drop marbles
-}
-
-//procedural navigation to get to the goal!
-void navToGoal(){
+/*
+void navToExit(){
   //while not in goal site
-  while (y < 3400)
-    while (distance >= collision_tolerance){
-      //move forward
+  while (y < 3.4){
+    while (!obstacleDetected){
+      updateSensors();
+      go();
     }
 
-    //back up a lil
-    //turn left (scanning) (find peaks in a graph of distance vs time?)
-    obstacleDetected = scan();
-    if (obstacleDetected = true){
-      //move left
-      //turn right
-    } else {
-      //turn back to normal
-    }
-
-    //turn RIGHT (scanning) (find peaks in a graph of distance vs time?)
-    if (obstacleDetected = true){
-      //move left
-      //turn right
-    } else {
-      //turn back to normal
-    }
+    //back up for a sec
+    goBack();
+    delay(1000);
+    turnLeft();
+    updateSensors();
     
-  } 
+    int count = 0;
+    //tries left
+    while (!obstacleDetected){
+      updateSensors();
+      go();
+      delay(1000);
+      turnRight();
+      go();
+      delay(1000);
+      //will it break here if one is detected?
+      turnLeft();
+      delay(2000);
+      turnRight();
+      delay(1000);
+
+      count++;
+    }
+
+    updateSensors();
+    if (abs(theta - PI/2) < 0.05){
+      goBack();
+      delay(1000*count);
+
+      //tries right
+      while (!obstacleDetected){
+        updateSensors();
+        go();
+        delay(1000);
+        turnLeft();
+        go();
+        delay(1000);
+
+        count++;
+      }
+    }
+  }
+}
+*/
+
+void updateSensors(){
+  //turns it off for a bit to make sure it's ready
+  digitalWrite(PIN_US_FRONT_TRIG, LOW);
+  delayMicroseconds(2);
+  //fires it
+  digitalWrite(PIN_US_FRONT_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_US_FRONT_TRIG, LOW);
+  // measures it when it comes back and calculates
+  float duration = pulseIn(PIN_US_FRONT_ECHO, HIGH, 30000);     
+  float distance = (duration*.0343)/2;
+
+  if (distance < collision_tolerance){
+    obstacleDetected = true;
+  } else {
+    obstacleDetected = false;
+  }
+
+  theta = Enes100.getTheta();
+  y = Enes100.getY();
+}
+
+void go(int ms){
+  Tank.setRightMotorPWM(255);
+  Tank.setLeftMotorPWM(255);
+  delay(ms);
+}
+
+void goBack(int ms){
+  Tank.setRightMotorPWM(-255);
+  Tank.setLeftMotorPWM(-255);
+  delay(ms);
+}
+
+void stop(){
+  Tank.setRightMotorPWM(0);
+  Tank.setLeftMotorPWM(0);
+}
+
+void turnLeft() {
+  updateSensors();
+  float target = theta + (PI/2);
+
+  while (abs(atan2(sin(target - theta), cos(target - theta))) > 0.05) {
+updateSensors();
+    Tank.setLeftMotorPWM(-255);
+    Tank.setRightMotorPWM(255);
+  }
+  stop();
+}
+
+void turnRight() {
+  updateSensors();
+  float target = theta - (PI/2);
+
+  while (abs(atan2(sin(target - theta), cos(target - theta))) > 0.05) {
+    updateSensors();
+    Tank.setLeftMotorPWM(255);
+    Tank.setRightMotorPWM(-255);
+  }
+  stop();
 }
