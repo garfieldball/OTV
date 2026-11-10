@@ -1,0 +1,24 @@
+#include <Servo.h>
+
+Servo rightServo;  // Create Servo object to control servo on the right (when looking from the rear)
+Servo leftServo;  // Create Servo object to control servo on the left (when looking from the rear)
+
+void setup() {
+  rightServo.attach(11);  // Attach right Servo object to pin 11
+  leftServo.attach(8);  // Attach right Servo object to pin 11
+
+  // Send stop signal to both servos
+  rightServo.write(90);
+  leftServo.write(90);
+}
+
+void loop() {
+  rightServo.write(100);
+  leftServo.write(80);   
+  delay(1000);
+
+  // Stop for 1 second
+  rightServo.write(90);  // Send stop signal (neutral position)
+  leftServo.write(90);  
+  delay(1000);
+}
