@@ -14,13 +14,13 @@ void setup() {
   Tank.begin();
   
   //navigation to mission site
-if (Enes100.getY() < 1){
-  //starting spot 1 (bottom)
-  turnTo(PI/2);
-} else {
-  //top
-  turnTo(-PI/2);
-}
+  if (Enes100.getY() < 1){
+    //starting spot 1 (bottom)
+    turnTo(PI/2);
+  } else {
+    //top
+    turnTo(-PI/2);
+  }
   
   //go until it detects a collision (runs into the mission site)
   while(Tank.readDistanceSensor(1) > 0.1 || Tank.readDistanceSensor(1) == -1){
