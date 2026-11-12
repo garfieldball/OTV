@@ -10,7 +10,7 @@ float tol = 0.025;
 //what if it gets stuck?
 
 void setup() {
-  Enes100.begin("Green Simulator", HYDROGEN, 3, 1116, 8, 9); //because hydrogen is broken for some reason
+  Enes100.begin("Green Simulator", HYDROGEN, 3, 1116, 8, 9);
   Tank.begin();
   
   //navigation to mission site
