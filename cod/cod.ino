@@ -2,7 +2,8 @@
 #include "Enes100.h"
 #include "Tank.h"
 
-float tol = 0.025;
+const float tol = 0.025;
+const float obstacleTol = 3;
 //todo: all turns have course correction and slow down near the turn
 //course correction for straight lines
 //require multiple checks before stopping
@@ -14,7 +15,7 @@ void setup() {
     Tank.begin();
     
     //navigation to mission site
-    if (Enes100.getY() < 1){
+    if (getTrueValue(Enes100.getY()) < 1){
         //starting spot 1 (bottom)
         turnTo(PI/2);
     } else {
@@ -146,4 +147,40 @@ void turnTo(float target){
 
 void stop(){
   Tank.turnOffMotors();
+}
+
+float getTrueValue(str measurementType){
+  float possibleMeasurements[3];
+  for (int i = 0; i < 3; i++)
+  {
+    if(measurementType == "x"){
+      possibleMeasurements[i] = Enes.getX();
+    } else if(measurementType == "y"){
+      possibleMeasurements[i] = Enes.getY();
+    } else if(measurementType == "theta"){
+      possibleMeasurements[i] = Enes.getTheta();
+    }
+  }
+  bubbleSort(possibleMeasurements);
+
+  return possibleMeasurements[1];
+}
+
+//i stole this sort (mostly) from geeks4geeks cuz i didn't wanna write it
+void bubbleSort(int arr[]){
+  n = arr.length();
+  int i, j;
+  bool swapped;
+  for (i = 0; i < n - 1; i++) {
+    swapped = false;
+    for (j = 0; j < n - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+        swap(&arr[j], &arr[j + 1]);
+        swapped = true;
+      }
+    }
+
+    if (swapped == false)
+      break;
+  }
 }
